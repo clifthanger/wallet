@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Tambah Sub Kategori</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nama Sub Kategori</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Tipe</label>
+            <select class="form-select" id="type" name="type" required>
+                <option value="income">Pemasukan</option>
+                <option value="expense">Pengeluaran</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="{{ url_for('sub_categories') }}" class="btn btn-secondary">Batal</a>
+    </form>
+{% endblock %}

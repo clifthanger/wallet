@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Daftar Transaksi</h2>
+    <div class="d-flex justify-content-between mb-3">
+        <a href="{{ url_for('add_transaction') }}" class="btn btn-primary">Tambah Transaksi</a>
+        <a href="{{ url_for('sub_categories') }}" class="btn btn-success">Sub Kategori</a>
+    </div>
+
+    <!-- Form Filter Tanggal -->
+    <form method="POST" action="{{ url_for('filter_transactions') }}" class="mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Dari Tanggal</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">Sampai Tanggal</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tombol Spoiler untuk Tabel Transaksi -->
+    <button class="btn btn-info mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#transactionTable" aria-expanded="false" aria-controls="transactionTable" id="spoilerButton">
+        Tampilkan <i class="bi bi-eye"></i> <!-- Ikon mata terbuka -->
+    </button>
+
+    <!-- Tabel Transaksi (Default Hidden) -->
+    <div class="collapse" id="transactionTable">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tipe</th>
+                    <th>Sub Kategori</th>
+                    <th>Jumlah</th>
+                    <th>Tanggal</th>
+                    <th>Deskripsi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.type }}</td>
+                        <td>{{ transaction.sub_category.name if transaction.sub_category else '-' }}</td>
+                        <td>{{ format_rupiah(transaction.amount) }}</td>
+                        <td class="tanggal-transaksi">{{ transaction.date }}</td>
+                        <td>{{ transaction.description }}</td>
+                        <td>
+                            <a href="{{ url_for('edit_transaction', id=transaction.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ url_for('delete_transaction', id=transaction.id) }}" class="btn btn-danger btn-sm">Hapus</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Informasi Keuangan dalam Tabel dengan Warna -->
+    <div class="mt-4">
+        <h4>Informasi Keuangan</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="background-color: #e8f5e9; color: #2e7d32;">Total Pemasukan</th> <!-- Hijau muda -->
+                    <th style="background-color: #ffebee; color: #c62828;">Total Pengeluaran</th> <!-- Merah muda -->
+                    <th style="background-color: #fffde7; color: #f9a825;">Sisa</th> <!-- Kuning muda -->
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="background-color: #e8f5e9; color: #2e7d32;">{{ format_rupiah(total_income) }}</td> <!-- Hijau muda -->
+                    <td style="background-color: #ffebee; color: #c62828;">{{ format_rupiah(total_expense) }}</td> <!-- Merah muda -->
+                    <td style="background-color: #fffde7; color: #f9a825;">{{ format_rupiah(sisa) }}</td> <!-- Kuning muda -->
+                </tr>
+            </tbody>
+        </table>
+        <p><small>Data dari tanggal {{ tanggal_terlama }} sampai dengan {{ tanggal_terbaru }}.</small></p>
+    </div>
+
+    <!-- Tombol Navigasi ke Pemasukan dan Pengeluaran -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('income') }}" class="btn btn-outline-primary mx-2">
+            <i class="bi bi-cash-coin"></i> Lihat Pemasukan
+        </a>
+        <a href="{{ url_for('expense') }}" class="btn btn-outline-primary mx-2">
+            <i class="bi bi-cart"></i> Lihat Pengeluaran
+        </a>
+    </div>
+
+    <!-- Script untuk Mengubah Format Tanggal -->
+    <script>
+	    const spoilerButton = document.getElementById('spoilerButton');
+        const transactionTable = document.getElementById('transactionTable');
+
+        // Fungsi untuk mengubah teks dan ikon tombol
+        function updateButtonText() {
+            if (transactionTable.classList.contains('show')) {
+                spoilerButton.innerHTML = 'Sembunyikan <i class="bi bi-eye-slash"></i>'; // Ikon mata tertutup
+            } else {
+                spoilerButton.innerHTML = 'Tampilkan <i class="bi bi-eye"></i>'; // Ikon mata terbuka
+            }
+        }
+
+        // Event listener untuk perubahan status collapse
+        transactionTable.addEventListener('shown.bs.collapse', updateButtonText);
+        transactionTable.addEventListener('hidden.bs.collapse', updateButtonText);
+	
+        // Fungsi untuk mengubah format tanggal dari yyyy-mm-dd ke dd-mm-yyyy
+        function formatTanggal(tanggal) {
+            const [tahun, bulan, hari] = tanggal.split('-');
+            return `${hari}-${bulan}-${tahun}`;
+        }
+
+        // Format tanggal di informasi keuangan
+        const tanggalInfo = document.querySelector('small');
+        if (tanggalInfo) {
+            const teksTanggal = tanggalInfo.textContent;
+            const [dari, sampai] = teksTanggal.match(/\d{4}-\d{2}-\d{2}/g) || [];
+            if (dari && sampai) {
+                tanggalInfo.textContent = teksTanggal
+                    .replace(dari, formatTanggal(dari))
+                    .replace(sampai, formatTanggal(sampai));
+            }
+        }
+
+        // Format tanggal di tabel transaksi
+        document.querySelectorAll('.tanggal-transaksi').forEach(td => {
+            td.textContent = formatTanggal(td.textContent);
+        });
+    </script>
+{% endblock %}

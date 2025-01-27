@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Edit Transaksi</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="type" class="form-label">Tipe</label>
+            <select class="form-select" id="type" name="type" required>
+                <option value="income" {% if transaction.type == 'income' %}selected{% endif %}>Pemasukan</option>
+                <option value="expense" {% if transaction.type == 'expense' %}selected{% endif %}>Pengeluaran</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="sub_category_id" class="form-label">Sub Kategori</label>
+            <select class="form-select" id="sub_category_id" name="sub_category_id">
+                <option value="">Pilih Sub Kategori</option>
+                {% if income_sub_categories %}
+                    <optgroup label="Pemasukan">
+                        {% for sub in income_sub_categories %}
+                            <option value="{{ sub.id }}" {% if transaction.sub_category_id == sub.id %}selected{% endif %}>{{ sub.name }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endif %}
+                {% if expense_sub_categories %}
+                    <optgroup label="Pengeluaran">
+                        {% for sub in expense_sub_categories %}
+                            <option value="{{ sub.id }}" {% if transaction.sub_category_id == sub.id %}selected{% endif %}>{{ sub.name }}</option>
+                        {% endfor %}
+                    </optgroup>
+                {% endif %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="amount" class="form-label">Jumlah</label>
+            <input type="number" class="form-control" id="amount" name="amount" step="0.01" value="{{ transaction.amount }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Tanggal</label>
+            <input type="date" class="form-control" id="date" name="date" value="{{ transaction.date }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Deskripsi</label>
+            <textarea class="form-control" id="description" name="description">{{ transaction.description }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+    </form>
+{% endblock %}

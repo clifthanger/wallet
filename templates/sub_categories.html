@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Kelola Sub Kategori</h2>
+    <a href="{{ url_for('add_sub_category') }}" class="btn btn-primary mb-3">Tambah Sub Kategori</a>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Tipe</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in sub_categories %}
+                <tr>
+                    <td>{{ sub.name }}</td>
+                    <td>{{ sub.type }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_sub_category', id=sub.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{ url_for('delete_sub_category', id=sub.id) }}" class="btn btn-danger btn-sm">Hapus</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+	    <!-- Tombol Kembali ke Home -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-house-door"></i> Kembali ke Home
+        </a>
+    </div>
+{% endblock %}

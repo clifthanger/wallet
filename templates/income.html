@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Pemasukan</h2>
+    <form method="POST" action="{{ url_for('filter_transactions') }}" class="mb-4">
+        <input type="hidden" name="type" value="income">
+        <div class="row">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Dari Tanggal</label>
+                <input type="date" class="form-control" id="start_date" name="start_date" required>
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">Sampai Tanggal</label>
+                <input type="date" class="form-control" id="end_date" name="end_date" required>
+            </div>
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sub Kategori</th>
+                <th>Jumlah</th>
+                <th>Tanggal</th>
+                <th>Deskripsi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.sub_category.name if transaction.sub_category else '-' }}</td>
+                    <td>{{ format_rupiah(transaction.amount) }}</td>
+                    <td class="tanggal-transaksi">{{ transaction.date }}</td>
+                    <td>{{ transaction.description }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <strong>Total Pemasukan: {{ format_rupiah(total_income) }}</strong>
+    </div>
+
+    <!-- Tombol Kembali ke Home -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-house-door"></i> Kembali ke Home
+        </a>
+    </div>
+
+    <!-- Script untuk Mengubah Format Tanggal -->
+    <script>
+        // Fungsi untuk mengubah format tanggal dari yyyy-mm-dd ke dd-mm-yyyy
+        function formatTanggal(tanggal) {
+            const [tahun, bulan, hari] = tanggal.split('-');
+            return `${hari}-${bulan}-${tahun}`;
+        }
+
+        // Format tanggal di tabel transaksi
+        document.querySelectorAll('.tanggal-transaksi').forEach(td => {
+            td.textContent = formatTanggal(td.textContent);
+        });
+    </script>
+{% endblock %}

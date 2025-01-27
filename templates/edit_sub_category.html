@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Edit Sub Kategori</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nama Sub Kategori</label>
+            <input type="text" class="form-control" id="name" name="name" value="{{ sub_category.name }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="type" class="form-label">Tipe</label>
+            <select class="form-select" id="type" name="type" required>
+                <option value="income" {% if sub_category.type == 'income' %}selected{% endif %}>Pemasukan</option>
+                <option value="expense" {% if sub_category.type == 'expense' %}selected{% endif %}>Pengeluaran</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <a href="{{ url_for('sub_categories') }}" class="btn btn-secondary">Batal</a>
+    </form>
+	    <!-- Tombol Kembali ke Home -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-house-door"></i> Kembali ke Home
+        </a>
+    </div>
+{% endblock %}
